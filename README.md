@@ -92,7 +92,7 @@ Modifiers apply changes to the `element` object and return the modified object. 
 - `class(…classNames: string)`
 	- applies strings from  `classNames` to the `className` prop
 - `css(newCSS: object)`
-	- applies `newCSS` to the element using `emotion`  to generate styles and enable CSS features like child selectors, pseudo-elements, and media queries
+	- applies `newCSS` to the element using [`emotion`](https://github.com/emotion-js/emotion/tree/master/packages/emotion) to generate styles and enable CSS features like child selectors, pseudo-elements, and media queries
 
 ## Motivation
 Today we can build web apps more quickly than ever. But somehow it’s never been harder to do it. To use JSX in your React app, you need node, npm, babel, and webpack. Beginners have to learn all of this just to get started. I think we can do better.
