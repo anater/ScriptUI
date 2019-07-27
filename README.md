@@ -16,7 +16,7 @@ const Hello = View("div")(
 Browser:
 ```html
 <!-- Include React and ReactDOM dependencies first -->
-<script src="https://unpkg.com/scriptui@1.0.1/public/index.js"></script>
+<script src="https://unpkg.com/scriptui@1.0.2/public/index.js"></script>
 <!-- Include your scripts last -->
 ```
 
@@ -30,8 +30,8 @@ The following demonstrates how you render your `View` with `ReactDOM.render`.
 
 Browser:
 ```javascript
-// View is global. 
-// Assuming React & ReactDOM scripts are also global.
+// Assuming React & ReactDOM scripts are global.
+const { View } = ScriptUI;
 const MyView = View("span")("My View");
 ReactDOM.render(
   View.render(MyView),

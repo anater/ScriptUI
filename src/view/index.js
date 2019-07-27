@@ -6,7 +6,7 @@ import styleModifiers from "./styleModifiers";
  * Uses `type` and `props` to produce a function which accepts `children`.
  * When the returned function is called, it produces an element object.
  */
-export default function View(type = "div", props) {
+export function View(type = "div", props) {
   /**
    * Creates a new `element` object with `type`, `props`, `children`. `createElement.modifiers` is the object prototype
    */
@@ -125,3 +125,5 @@ function classnames(classList = []) {
     return filteredClassList.join(" ");
   }
 }
+
+export default View;

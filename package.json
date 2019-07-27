@@ -1,15 +1,16 @@
 {
   "name": "scriptui",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Write React without JSX",
   "main": "public/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel demo/index.html",
     "build": "parcel build src/view/index.js -d public",
-    "build-umd": "parcel build src/view/index.js -d umd --global View",
+    "build-umd": "parcel build src/view/index.js -d umd --global ScriptUI",
     "prepublishOnly": "npm run build; npm run build-umd"
   },
+  "files": ["umd", "public"],
   "author": "Andrew Nater",
   "license": "MIT",
   "repository": {
