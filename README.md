@@ -28,7 +28,7 @@ npm install --save scriptui react react-dom
 ## Usage
 The following demonstrates how you render your `View` with `ReactDOM.render`. 
 
-Browser:
+Browser (Try it in [CodePen](https://codepen.io/anater/pen/jgVZpR?editors=0011#0)):
 ```javascript
 // Assuming React & ReactDOM scripts are global.
 const { View } = ScriptUI;
