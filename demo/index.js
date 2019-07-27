@@ -1,3 +1,5 @@
+import React from "react";
+import ReactDOM from "react-dom";
 import View from "../src/view/index";
 import { Flex, Text, Spacer, Button, Link } from "../src/components";
 

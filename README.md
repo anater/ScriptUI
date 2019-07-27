@@ -13,16 +13,20 @@ const Hello = View("div")(
 ```
 
 ## Installation
+ScriptUI has peer dependencies: React, ReactDOM, and Emotion.
 Browser:
 ```html
-<!-- Include React and ReactDOM dependencies first -->
-<script src="https://unpkg.com/scriptui@1.0.2/public/index.js"></script>
+<!-- Include React, ReactDOM, and Emotion first -->
+<script src="https://unpkg.com/react/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/emotion/dist/emotion.umd.min.js"></script>
+<script src="https://unpkg.com/script-ui/public/index.umd.js"></script>
 <!-- Include your scripts last -->
 ```
 
 Node:
 ```
-npm install --save scriptui react react-dom
+npm install --save script-ui react react-dom emotion
 ```
 
 ## Usage

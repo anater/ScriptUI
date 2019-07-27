@@ -1,16 +1,19 @@
 {
-  "name": "scriptui",
-  "version": "1.0.2",
+  "name": "script-ui",
+  "version": "0.0.1-rc1",
   "description": "Write React without JSX",
   "main": "public/index.js",
+  "umd:main": "public/index.umd.js",
+  "module": "public/index.module.js",
+  "source": "src/view/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel demo/index.html",
-    "build": "parcel build src/view/index.js -d public",
-    "build-umd": "parcel build src/view/index.js -d umd --global ScriptUI",
-    "prepublishOnly": "npm run build; npm run build-umd"
+    "prepublishOnly": "microbundle --name=ScriptUI --globals react=React"
   },
-  "files": ["umd", "public"],
+  "files": [
+    "public"
+  ],
   "author": "Andrew Nater",
   "license": "MIT",
   "repository": {
@@ -18,15 +21,15 @@
     "url": "https://github.com/anater/ScriptUI.git"
   },
   "devDependencies": {
+    "microbundle": "^0.11.0",
     "parcel-bundler": "^1.12.3",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
-  },
-  "dependencies": {
+    "react-dom": "^16.8.6",
     "emotion": "^10.0.14"
   },
   "peerDependencies": {
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "emotion": "^10.0.14"
   }
 }
