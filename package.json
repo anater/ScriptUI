@@ -1,22 +1,27 @@
 {
-  "name": "webui",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "scriptui",
+  "version": "1.0.1",
+  "description": "Write React without JSX",
+  "main": "public/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html"
+    "start": "parcel demo/index.html",
+    "build": "parcel build src/view/index.js -d public",
+    "build-umd": "parcel build src/view/index.js -d umd --global View",
+    "prepublishOnly": "npm run build; npm run build-umd"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Andrew Nater",
+  "license": "MIT",
   "devDependencies": {
     "parcel-bundler": "^1.12.3",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.14",
-    "emotion": "^10.0.14",
-    "view.js": "^4.1.0"
+    "emotion": "^10.0.14"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   }
 }

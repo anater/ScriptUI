@@ -1,4 +1,7 @@
-// import "./view";
+import { css } from "emotion";
+
+import styleModifiers from "./styleModifiers";
+
 /**
  * Uses `type` and `props` to produce a function which accepts `children`.
  * When the returned function is called, it produces an element object.
@@ -94,7 +97,14 @@ View.modifiers = {
       classList.push(this.props.className);
     }
     return this.set({ className: classnames(classList) });
-  }
+  },
+
+  css(newStyles) {
+    return this.class(css(newStyles));
+  },
+
+  // spread styleModifiers into base modifiers
+  ...styleModifiers,
 };
 
 /**
@@ -115,40 +125,3 @@ function classnames(classList = []) {
     return filteredClassList.join(" ");
   }
 }
-
-// VIEWS
-/**
- * View
- * - size
- *  - width
- *  - height
- *  - size(width, height)
- *  - relativeSize(width, height) (0-1)
- *  - padding(number | { TBLR })
- * - bg & border
- *   - background(css shorthand)
- *   - zIndex(value)
- *   - border(shorthand)
- *   - borderRadius
- *   - shadow(box shadow)
- * - position
- *   - position(x, y)
- *   - offset(x, y)
- *   - edgesIgnoringSafeArea({ TBLR })?
- * Text
- * - init(content)
- * - styling
- *  - bold
- *  - italic
- *  - color
- *  - weight
- *  - baselineOffset?
- *  - kerning?
- *  - underline
- *  - strikethrough
- * - font
- *  - fontFamily
- *  - fontSize
- *  - lineHeight
- *  -
- */
