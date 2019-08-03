@@ -1,3 +1,17 @@
+/**
+ * @typedef {string | number} CSSValue
+ */
+
+/**
+ * @typedef EdgeValues
+ * @prop {CSSValue} top
+ * @prop {CSSValue} bottom
+ * @prop {CSSValue} vertical
+ * @prop {CSSValue} left
+ * @prop {CSSValue} right
+ * @prop {CSSValue} horizontal
+ */
+
 import { css } from "emotion";
 
 export class UI {
@@ -17,7 +31,7 @@ export class UI {
   /**
    * Passes `element` object to `modifier` function and returns the result
    */
-  modify(modifier) {
+  modify(modifier = (this) => this) {
     return modifier(this);
   }
 
@@ -31,6 +45,7 @@ export class UI {
 
   /**
    * Combine values from `...classList` to replace the className prop
+   * @arg {string[]} classList
    */
   class(...classList) {
     if (this.props && this.props.className) {
@@ -39,16 +54,21 @@ export class UI {
     return this.set({ className: classnames(classList) });
   }
 
+  /**
+   * Applies `newStyles` with a unique CSS class
+   */
   css(newStyles) {
     return this.class(css(newStyles));
   }
 }
 
 export class StyledUI extends UI {
+  /** @arg {CSSValue} value */
   color(value) {
     return this.css({ color: value });
   }
 
+  /** @arg {CSSValue} value */
   background(value) {
     if (typeof value === "string") {
       return this.css({ background: value });
@@ -68,6 +88,7 @@ export class StyledUI extends UI {
     }
   }
 
+  /** @arg {CSSValue} value */
   font(value) {
     if (typeof value === "string") {
       return this.css({ font: value });
@@ -84,14 +105,20 @@ export class StyledUI extends UI {
     }
   }
 
+  /** @arg {CSSValue} value */
   display(value) {
     return this.css({ display: value });
   }
 
+  /** @arg {CSSValue} value */
   zIndex(value) {
     return this.css({ zIndex: value });
   }
 
+  /**
+   * @arg {string} value Valid value for `position` css property
+   * @arg {EdgeValues} edges Position offset values
+   */
   position(value, edges) {
     return this.css({
       position: value,
@@ -102,6 +129,9 @@ export class StyledUI extends UI {
     });
   }
 
+  /**
+   * @arg {CSSValue} value Sets both width and height when passed a number or string.
+   */
   frame(value) {
     if (typeof value === "string" || typeof value === "number") {
       return this.css({ width: value, height: value });
@@ -119,6 +149,7 @@ export class StyledUI extends UI {
     }
   }
 
+  /** @arg {CSSValue | EdgeValues} value */
   border(value) {
     if (typeof value === "string") {
       return this.css({ border: value });
@@ -136,10 +167,12 @@ export class StyledUI extends UI {
     }
   }
 
+  /** @arg {CSSValue} value */
   radius(value) {
     return this.border({ radius: value });
   }
 
+  /** @arg {CSSValue | EdgeValues} value */
   margin(value) {
     if (typeof value === "string" || typeof value === "number") {
       return this.css({ margin: value });
@@ -155,6 +188,7 @@ export class StyledUI extends UI {
     }
   }
 
+  /** @arg {CSSValue | EdgeValues} value */
   padding(value) {
     if (typeof value === "string" || typeof value === "number") {
       return this.css({ padding: value });
@@ -170,6 +204,7 @@ export class StyledUI extends UI {
     }
   }
 
+  /** @arg {CSSValue} value */
   shadow(value) {
     return this.css({ boxShadow: value });
   }
