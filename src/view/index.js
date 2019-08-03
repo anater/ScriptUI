@@ -1,34 +1,25 @@
 import React from "react";
-import { css } from "emotion";
 
-import styleModifiers from "./styleModifiers";
+import { StyledUI, UI } from "./elements";
 
 /**
  * Uses `type` and `props` to produce a function which accepts `children`.
- * When the returned function is called, it produces an element object.
+ * When the returned function is called, it produces a UI class.
+ * @template {StyledUI} U
+ * @param {string} type
+ * @param {object=} props
+ * @param {new U} element
  */
-export function View(type = "div", props) {
+export function View(type = "div", props, element = StyledUI) {
   /**
-   * Creates a new `element` object with `type`, `props`, `children`. `createElement.modifiers` is the object prototype
+   * @param {...(UI|string|false)} children
+   * @returns {U}
    */
-  const createElement = function(...children) {
-    let element = Object.create(createElement.modifiers);
-    Object.assign(element, { type, props, children });
-    return element;
-  };
-  /**
-   * Contains any custom modifiers for this element. Prototype is `View.modifiers` to enable access to all base modifiers
-   */
-  createElement.modifiers = Object.create(View.modifiers);
-  /**
-   * Merges `newModifiers` object into `createElement.modifiers`
-   * */
-  createElement.addModifiers = function(newModifiers = {}) {
-    Object.assign(createElement.modifiers, newModifiers);
-    return createElement;
+  const Factory = function(...children) {
+    return new element(type, props, children);
   };
 
-  return createElement;
+  return Factory;
 }
 
 /**
@@ -66,65 +57,5 @@ View.render = function(element) {
   }
 };
 
-View.modifiers = {
-  /**
-   * Merges `newProps` into props
-   */
-  set(newProps) {
-    this.props = Object.assign(this.props || {}, newProps);
-    return this;
-  },
-
-  /**
-   * Passes `element` object to `modifier` function and returns the result
-   */
-  modify(modifier) {
-    return modifier(this);
-  },
-
-  /**
-   * Merges `newStyles` into the style prop
-   */
-  style(newStyles) {
-    this.props.style = Object.assign(this.props.style || {}, newStyles);
-    return this;
-  },
-
-  /**
-   * Combine values from `...classList` to replace the className prop
-   */
-  class(...classList) {
-    if (this.props && this.props.className) {
-      classList.push(this.props.className);
-    }
-    return this.set({ className: classnames(classList) });
-  },
-
-  css(newStyles) {
-    return this.class(css(newStyles));
-  },
-
-  // spread styleModifiers into base modifiers
-  ...styleModifiers,
-};
-
-/**
- * Merges `newModifiers` object into `View.modifiers`
- * */
-View.addModifiers = function(newModifiers = {}) {
-  Object.assign(View.modifiers, newModifiers);
-  return View;
-};
-
-// HELPERS
-
-function classnames(classList = []) {
-  const filteredClassList = classList.filter(
-    c => c !== false && typeof c === "string" && c.length > 0
-  );
-  if (filteredClassList.length > 0) {
-    return filteredClassList.join(" ");
-  }
-}
-
 export default View;
+export { StyledUI };
