@@ -30,8 +30,9 @@ export class UI {
 
   /**
    * Passes `element` object to `modifier` function and returns the result
+   * @arg {function(this):this} modifier
    */
-  modify(modifier = (this) => this) {
+  modify(modifier) {
     return modifier(this);
   }
 

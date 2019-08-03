@@ -1,6 +1,6 @@
 import React from "react";
 
-import { StyledUI, UI } from "./elements";
+import { StyledUI, UI } from "./ui";
 
 /**
  * Uses `type` and `props` to produce a function which accepts `children`.
@@ -58,4 +58,4 @@ View.render = function(element) {
 };
 
 export default View;
-export { StyledUI };
+export { StyledUI, UI };
