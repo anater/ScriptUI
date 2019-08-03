@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel demo/index.html",
-    "prepublishOnly": "microbundle --name=ScriptUI --globals react=React"
+    "prepublishOnly": "microbundle --name=ScriptUI"
   },
   "files": [
     "public"
@@ -23,11 +23,8 @@
   "devDependencies": {
     "microbundle": "^0.11.0",
     "parcel-bundler": "^1.12.3",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "emotion": "^10.0.14"
   },
-  "peerDependencies": {
+  "dependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "emotion": "^10.0.14"
