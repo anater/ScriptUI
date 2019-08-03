@@ -20,8 +20,7 @@ const Tasks = (tasks, onChange) => {
         .margin({
           vertical: "1em",
           right: "2em"
-        })
-        .modify(element => element.css({ lineHeight: 2 })),
+        }),
       Text(taskText, "label")
         .set({ htmlFor: index })
         .font({ size: "1.3rem", lineHeight: 1.5 })
