@@ -34,7 +34,7 @@ View.render = function(element) {
   if (!element) {
     // falsy elements are treated as false
     return false;
-  } else if (typeof element === "string") {
+  } else if (typeof element === "string" || typeof element === "number") {
     // send back the string as is
     return element;
   } else if (typeof element === "function") {
