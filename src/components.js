@@ -1,4 +1,4 @@
-import View, { StyledUI } from "./view";
+import View, { StyledUI } from "./view/index.js";
 
 /*
   Elements

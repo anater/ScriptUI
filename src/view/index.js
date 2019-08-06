@@ -1,6 +1,6 @@
-import React from "react";
+import { React } from "https://unpkg.com/es-react";
 
-import { StyledUI, UI } from "./ui";
+import { StyledUI, UI } from "./ui.js";
 
 /**
  * Uses `type` and `props` to produce a function which accepts `children`.

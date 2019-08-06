@@ -12,7 +12,7 @@
  * @prop {CSSValue} horizontal
  */
 
-import { css } from "emotion";
+import { css } from "https://cdn.pika.dev/emotion/v10/";
 
 export class UI {
   constructor(type = "span", props = {}, children = []) {
