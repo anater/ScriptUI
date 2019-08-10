@@ -4,64 +4,137 @@ import { Flex, Text, Spacer, Button, Link } from "./components.js";
 
 import { injectGlobal } from "https://cdn.pika.dev/emotion/v10/";
 
-const Input = props => {
-  const newInput = View("input", { ...props, type: "text" });
-  return newInput();
-};
+// defining local app components
 
-const Title = text =>
-  Text(text, "h1")
-    .font({ size: "2rem" })
-    .margin(0);
+const Input = props =>
+  View("input", { ...props, type: "text" })()
+    .padding(20)
+    .margin({ vertical: 10 })
+    .background("rgba(255,255,255,0.1)")
+    .color("white")
+    .font({ family: "inherit", weight: "bold", size: 20 })
+    .frame({ width: "100%" })
+    .css({ boxSizing: "border-box" })
+    .border("none");
 
-const App = () => {
-  const [items, setItems] = React.useState([]);
-  React.useEffect(() => {
-    fetch("https://www.reddit.com/r/reactjs.json")
-      .then(res => res.json())
-      .then(({ data }) => setItems(data.children))
-      .catch(console.error);
-  }, []);
-  console.log(items);
-  return View("div")(
-    ...items.map(({ data }) =>
-      View("a", { href: data.url })(
-        Flex("row", "between")(
-          Text(data.title)
-            .color("cyan")
-            .font({ size: "1.25rem" }),
-          Flex("column", "end")(
-            Title(data.score).color("lightyellow"),
-            Title(data.num_comments).color("lightgreen")
-          )
-        ).align("center")
-      )
-        .color("white")
-        .display("block")
-        .margin({ vertical: 10 })
-        .padding(20)
-        .background("rgba(255,255,255,0.08)")
-        .radius(20)
-        .css({
-          textDecoration: "none",
-          transition: "transform 300ms ease",
-          ":hover": {
-            transform: "scale(1.01)"
-          }
-        })
-    )
-  )
-    .frame({ minHeight: "100vh" })
+const Image = src => View("img", { src })().frame({ width: "100%" });
+
+const Video = (src, fallback) =>
+  View("video", {
+    autoPlay: true,
+    loop: true,
+    onClick: e => e.preventDefault()
+  })(
+    View("source", { src })(),
+    fallback && View("source", { src: fallback })()
+  ).frame({ width: "100%" });
+
+const Container = (...children) =>
+  View("main")(...children)
+    .frame({ minHeight: "100vh", maxWidth: "90%" })
     .font({ family: "sans-serif", lineHeight: 1.5 })
     .background("black")
-    .padding(20);
+    .padding(20)
+    .margin("0 auto");
+
+function Media(title, permalink, src, type) {
+  if (type !== "img" && type !== "video") {
+    new Error("Invalid type:", type);
+    return false;
+  }
+
+  let MediaPreview;
+  if (type === "video") MediaPreview = Video(src.mp4, src.gif);
+  else if (type === "img") MediaPreview = Image(src);
+
+  return View("a", { href: `//reddit.com${permalink}` })(
+    Flex("column")(
+      MediaPreview,
+      Text(title)
+        .font({ size: "1rem" })
+        .padding(20)
+        .color("lightblue")
+    )
+  )
+    .color("white")
+    .display("block")
+    .margin({ vertical: 20 })
+    .background("rgba(255,255,255,0.08)")
+    .css({ textDecoration: "none" });
+}
+
+// app starts here
+
+const App = () => {
+  // set up state
+  const [items, setItems] = React.useState([]);
+  const [subreddit, setSubreddit] = React.useState("gifs");
+  const [loading, setLoading] = React.useState(false);
+
+  // fetch subreddit data
+  React.useEffect(() => {
+    setLoading(true);
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetch(`https://www.reddit.com/r/${subreddit}.json?raw_json=1`, { signal })
+      .then(res => res.json())
+      .then(({ data }) => {
+        console.log(`setting ${subreddit} items`);
+        setItems(data.children);
+        setLoading(false);
+      })
+      .catch(error => console.log(JSON.stringify(error)));
+    // cleanup
+    return () => {
+      console.log(`aborting ${subreddit}`);
+      controller.abort();
+    };
+  }, [subreddit]);
+
+  // console.log({ subreddit, items, loading });
+
+  return Container(
+    // TODO: use a button to initiate the search instead of onkeypress
+    Input({
+      placeholder: "gifs",
+      onKeyPress: e => setSubreddit(e.currentTarget.value)
+    }),
+    View("div")(
+      ...items.map(({ data }) => {
+        const firstImage = data.preview.images[0];
+        let source = null;
+        let type = null;
+
+        if (data.post_hint.includes("video")) {
+          type = "video";
+          source = {
+            mp4: firstImage.variants.mp4.source.url,
+            gif: firstImage.variants.gif.source.url
+          };
+        } else if (data.post_hint.includes("image")) {
+          type = "img";
+          source = firstImage.source.url;
+        } else {
+          console.log("other type", data.post_hint, data.preview);
+          return false;
+        }
+        console.log({ source, type });
+        return Media(data.title, data.permalink, source, type);
+      })
+    ).css({
+      columns: "3 400px",
+      columnGap: "2rem"
+    })
+  );
 };
 
 window.onload = () => {
   const element = View.render(App);
   const root = document.querySelector("#root");
   injectGlobal({
-    body: { margin: 0 }
+    body: { margin: 0, backgroundColor: "black" }
   });
   ReactDOM.render(element, root);
 };
