@@ -9,7 +9,6 @@ import { injectGlobal } from "https://cdn.pika.dev/emotion/v10/";
 const Input = props =>
   View("input", { ...props, type: "text" })()
     .padding(20)
-    .margin({ vertical: 10 })
     .background("rgba(255,255,255,0.1)")
     .color("white")
     .font({ family: "inherit", weight: "bold", size: 20 })
@@ -69,16 +68,21 @@ const App = () => {
   // set up state
   const [items, setItems] = React.useState([]);
   const [subreddit, setSubreddit] = React.useState("gifs");
+  const [inputValue, setInputValue] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
   // fetch subreddit data
   React.useEffect(() => {
     setLoading(true);
+    setItems([]);
 
     const controller = new AbortController();
     const signal = controller.signal;
 
-    fetch(`https://www.reddit.com/r/${subreddit}.json?raw_json=1`, { signal })
+    fetch(
+      `https://www.reddit.com/r/${subreddit}/top.json?raw_json=1&t=week&limit=20`,
+      { signal }
+    )
       .then(res => res.json())
       .then(({ data }) => {
         console.log(`setting ${subreddit} items`);
@@ -93,21 +97,44 @@ const App = () => {
     };
   }, [subreddit]);
 
-  // console.log({ subreddit, items, loading });
-
+  // console.log({ items, loading, subreddit });
   return Container(
-    // TODO: use a button to initiate the search instead of onkeypress
-    Input({
-      placeholder: "gifs",
-      onKeyPress: e => setSubreddit(e.currentTarget.value)
-    }),
+    Flex("row", "between")(
+      Input({
+        placeholder: "gifs",
+        onKeyPress: e => setInputValue(e.currentTarget.value)
+      }),
+      Button("GO")
+        .frame({
+          width: "20%",
+          maxWidth: 60
+        })
+        .set({ type: "submit" })
+        .background("lightblue")
+        .font({ size: "1em", weight: "bold" })
+        .border("none")
+    )
+      .margin({ vertical: 20 })
+      .modify(ui => {
+        ui.type = "form";
+        return ui.set({
+          name: "test",
+          onSubmit: e => {
+            e.preventDefault();
+            setSubreddit(inputValue);
+          }
+        });
+      }),
     View("div")(
       ...items.map(({ data }) => {
+        // guard against missing preview data
+        if (!data.preview) return false;
+
         const firstImage = data.preview.images[0];
         let source = null;
         let type = null;
 
-        if (data.post_hint.includes("video")) {
+        if (data.post_hint.includes("video") && firstImage.variants) {
           type = "video";
           source = {
             mp4: firstImage.variants.mp4.source.url,
@@ -116,11 +143,22 @@ const App = () => {
         } else if (data.post_hint.includes("image")) {
           type = "img";
           source = firstImage.source.url;
+        } else if (data.post_hint.includes("link")) {
+          if (firstImage.reddit_video_preview) {
+            type = "video";
+            source = {
+              mp4: firstImage.reddit_video_preview.fallback_url,
+              gif: firstImage.reddit_video_preview.fallback_url
+            };
+          } else {
+            type = "img";
+            source = firstImage.source.url;
+          }
         } else {
-          console.log("other type", data.post_hint, data.preview);
+          console.warn("other type", data.post_hint, data.preview);
           return false;
         }
-        console.log({ source, type });
+
         return Media(data.title, data.permalink, source, type);
       })
     ).css({
