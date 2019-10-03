@@ -66,38 +66,10 @@ function Media(title, permalink, src, type) {
 
 const App = () => {
   // set up state
-  const [items, setItems] = React.useState([]);
   const [subreddit, setSubreddit] = React.useState("gifs");
   const [inputValue, setInputValue] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-
-  // fetch subreddit data
-  React.useEffect(() => {
-    setLoading(true);
-    setItems([]);
-
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    fetch(
-      `https://www.reddit.com/r/${subreddit}/top.json?raw_json=1&t=week&limit=20`,
-      { signal }
-    )
-      .then(res => res.json())
-      .then(({ data }) => {
-        console.log(`setting ${subreddit} items`);
-        setItems(data.children);
-        setLoading(false);
-      })
-      .catch(error => console.log(JSON.stringify(error)));
-    // cleanup
-    return () => {
-      console.log(`aborting ${subreddit}`);
-      controller.abort();
-    };
-  }, [subreddit]);
-
-  // console.log({ items, loading, subreddit });
+  // const [loading, setLoading] = React.useState(false);
+  const items = useReddit(subreddit);
   return Container(
     Flex("row", "between")(
       Input({
@@ -125,48 +97,82 @@ const App = () => {
           }
         });
       }),
-    View("div")(
-      ...items.map(({ data }) => {
-        // guard against missing preview data
-        if (!data.preview) return false;
-
-        const firstImage = data.preview.images[0];
-        let source = null;
-        let type = null;
-
-        if (data.post_hint.includes("video") && firstImage.variants) {
-          type = "video";
-          source = {
-            mp4: firstImage.variants.mp4.source.url,
-            gif: firstImage.variants.gif.source.url
-          };
-        } else if (data.post_hint.includes("image")) {
-          type = "img";
-          source = firstImage.source.url;
-        } else if (data.post_hint.includes("link")) {
-          if (firstImage.reddit_video_preview) {
-            type = "video";
-            source = {
-              mp4: firstImage.reddit_video_preview.fallback_url,
-              gif: firstImage.reddit_video_preview.fallback_url
-            };
-          } else {
-            type = "img";
-            source = firstImage.source.url;
-          }
-        } else {
-          console.warn("other type", data.post_hint, data.preview);
-          return false;
-        }
-
-        return Media(data.title, data.permalink, source, type);
-      })
-    ).css({
+    View("div")(...renderMediaList(items)).css({
       columns: "3 400px",
       columnGap: "2rem"
     })
   );
 };
+
+function renderMediaList(items) {
+  return items.map(({ data }) => {
+    // guard against missing preview data
+    if (!data.preview) return false;
+    const { title, link, source, type } = getMediaPropsFromData(data);
+    return Media(title, link, source, type);
+  });
+
+  function getMediaPropsFromData(data) {
+    const firstImage = data.preview.images[0];
+    let source = null;
+    let type = null;
+
+    if (data.post_hint.includes("video") && firstImage.variants) {
+      type = "video";
+      source = {
+        mp4: firstImage.variants.mp4.source.url,
+        gif: firstImage.variants.gif.source.url
+      };
+    } else if (data.post_hint.includes("image")) {
+      type = "img";
+      source = firstImage.source.url;
+    } else if (data.post_hint.includes("link")) {
+      if (firstImage.reddit_video_preview) {
+        type = "video";
+        source = {
+          mp4: firstImage.reddit_video_preview.fallback_url,
+          gif: firstImage.reddit_video_preview.fallback_url
+        };
+      } else {
+        type = "img";
+        source = firstImage.source.url;
+      }
+    } else {
+      console.warn("other type", data.post_hint, data.preview);
+    }
+
+    return { title: data.title, link: data.permalink, source, type };
+  }
+}
+
+/** @returns {Array} */
+function useReddit(subreddit) {
+  const [items, setItems] = React.useState([]);
+  // fetch subreddit data
+  React.useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    const url = `https://www.reddit.com/r/${subreddit}/top.json?raw_json=1&t=week&limit=20`;
+
+    // reset before fetch
+    setItems([]);
+
+    fetch(url, { signal })
+      .then(res => res.json())
+      .then(({ data }) => {
+        console.log(`setting ${subreddit} items`);
+        setItems(data.children);
+      })
+      .catch(console.error);
+    // cleanup
+    return () => {
+      console.log(`aborting ${subreddit}`);
+      controller.abort();
+    };
+  }, [subreddit]);
+
+  return items;
+}
 
 window.onload = () => {
   const element = View.render(App);
